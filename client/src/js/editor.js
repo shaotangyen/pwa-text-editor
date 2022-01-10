@@ -4,7 +4,16 @@ import { header } from './header';
 
 export default class {
   constructor() {
-    const localData = localStorage.getItem('content');
+    let localData;
+
+    if (!localStorage.getItem("content")) {
+      console.log("Nothing stored in localstorage");
+      localStorage.setItem("content", header);
+      putDb(1, localStorage.getItem("content"));
+      localData = localStorage.getItem("content");
+    } else {
+      localData = localStorage.getItem("content");
+    }
 
     // check if CodeMirror is loaded
     if (typeof CodeMirror === 'undefined') {
@@ -25,8 +34,13 @@ export default class {
     // When the editor is ready, set the value to whatever is stored in indexeddb.
     // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available, set the value to header.
     getDb().then((data) => {
-      console.info('Loaded data from IndexedDB, injecting into editor');
+      console.info('Loaded data from IndexedDB, injecting into editor!!');
+      console.log("==================================");
+      console.log("data: " + data);
+      console.log("localdata: " + localData);
+      console.log("header: " + header);
       this.editor.setValue(data || localData || header);
+
     });
 
     this.editor.on('change', () => {
@@ -36,7 +50,7 @@ export default class {
     // Save the content of the editor when the editor itself is loses focus
     this.editor.on('blur', () => {
       console.log('The editor has lost focus');
-      putDb(localStorage.getItem('content'));
+      putDb(1, localStorage.getItem('content'));
     });
   }
 }
