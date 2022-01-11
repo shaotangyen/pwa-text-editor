@@ -5,13 +5,14 @@ import { header } from './header';
 export default class {
   constructor() {
     let localData;
-
+    //check if there's anything in the localstorage. If not, use the header as a welcome replacement text
     if (!localStorage.getItem("content")) {
-      console.log("Nothing stored in localstorage");
+      //console.log("editor.js: Nothing stored in localstorage");
       localStorage.setItem("content", header);
       putDb(1, localStorage.getItem("content"));
       localData = localStorage.getItem("content");
     } else {
+      //console.log("editor.js: Getting content from local storage");
       localData = localStorage.getItem("content");
     }
 
@@ -34,13 +35,8 @@ export default class {
     // When the editor is ready, set the value to whatever is stored in indexeddb.
     // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available, set the value to header.
     getDb().then((data) => {
-      console.info('Loaded data from IndexedDB, injecting into editor!!');
-      console.log("==================================");
-      console.log("data: " + data);
-      console.log("localdata: " + localData);
-      console.log("header: " + header);
-      this.editor.setValue(data || localData || header);
-
+      //since data is always stored in data[0], use data[0].content to retrive the saved content from IndexedDB
+      this.editor.setValue(data[0].content || localData || header);
     });
 
     this.editor.on('change', () => {
@@ -49,7 +45,7 @@ export default class {
 
     // Save the content of the editor when the editor itself is loses focus
     this.editor.on('blur', () => {
-      console.log('The editor has lost focus');
+      //console.log('The editor has lost focus');
       putDb(1, localStorage.getItem('content'));
     });
   }
